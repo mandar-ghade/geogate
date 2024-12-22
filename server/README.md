@@ -22,7 +22,7 @@ and create a database for Geogate owned by your postgres user.
 CREATE DATABASE geogate OWNER <your-user>;
 ```
 Then, still as the superuser, grant the appropriate permissions to your user.
-```
+```sql
 GRANT USAGE ON SCHEMA public TO <your-user>;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO <your-user>;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO <your-user>;
