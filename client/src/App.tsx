@@ -52,9 +52,7 @@ async function fetchResourceNodes(
 };
 export default function App() {
   const [userPos, setUserPos] = useState<[number, number] | null>(null);
-  const [nodes, setNodes] = useState<ResourceNode[]>([
-    {id: 9, lat: 0, lon: 0, nodeType: NodeType.TREE}
-  ]);
+  const [nodes, setNodes] = useState<ResourceNode[]>([]);
 
   async function loadResourceNodes() {
       if (!userPos) return;
