@@ -6,7 +6,9 @@ $ cd server
 $ pip install -r requirements.txt
 ```
 **Note:** You may have to use `pip3` instead of `pip` depending on your system.
-Next, set up the database following the instructions in the [PostgreSQL section][#setting-up-postgresql].
+
+Next, set up the database following the instructions in the [PostgreSQL section](#setting-up-postgresql]).
+
 Then run the server with `uvicorn`, which was previously installed, from the command line in the `server` directory.
 ```bash
 $ uvicorn main:app --reload
@@ -19,11 +21,13 @@ $ sudo apt install postgresql
 $ sudo apt install postgis
 ```
 **Note:** `apt` is the Debian package manager used as example, you must use your system's appropriate package manager (e.g. `brew` for MacOS, also omit the `sudo` for MacOS).
+
 You then must start the `postgresql` service. For systemd users, run the command:
 ```bash
 $ sudo systemctl start postgresql
 ```
 At this point, you may create a PostgreSQL user (preferably matching your Unix username) to be the owner of the database. This is optional and you may, alternatively, follow the subsequent commands with the PostgreSQL superuser (`postgres`) instead.
+
 Next, open `psql` as the `postgres` superuser.
 ```bash
 $ psql -U postgres
