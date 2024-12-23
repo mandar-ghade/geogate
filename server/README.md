@@ -7,7 +7,7 @@ $ pip install -r requirements.txt
 ```
 **Note:** You may have to use `pip3` instead of `pip` depending on your system.
 
-Next, set up the database following the instructions in the [PostgreSQL section](#setting-up-postgresql]).
+Next, set up the database following the instructions in the [PostgreSQL section](#setting-up-postgresql).
 
 Then run the server with `uvicorn`, which was previously installed, from the command line in the `server` directory.
 ```bash
