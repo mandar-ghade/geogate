@@ -1,9 +1,25 @@
 import random
+from contextlib import asynccontextmanager
+from asyncpg import Pool
 from fastapi import FastAPI
+
+from db.connection import get_db_pool
+from db.queries import get_nodes_within_radius
 from models import NodeType, ResourceNode, NODE_TYPE_WEIGHTS
 from middleware import init_middleware
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    db_pool = await get_db_pool()
+    app.state.db_pool = db_pool
+    try:
+        yield
+    finally:
+        await db_pool.close()
+
+
+app = FastAPI(lifespan=lifespan)
 init_middleware(app)
 
 
@@ -19,17 +35,9 @@ async def get_root():
 
 
 @app.get("/api/nodes")
-async def get_nodes(lat: float, lon: float, radius: float) -> list[ResourceNode]:
-    # Convert from meters to degrees latitude/longitude
-    lat_offset = radius / 111_111
-    lon_offset = radius / 111_321
-    # Mock data
-    return [
-        ResourceNode(
-            id=int(random.randint(0, 1000000)),
-            node_type=get_random_node_type(),
-            lat=lat + lat_offset*(random.random()-0.5)*2,
-            lon=lon + lon_offset*(random.random()-0.5)*2,
-        )
-        for _ in range(10)
-    ]
+async def get_nodes(lat: float, lon: float) -> list[ResourceNode]:
+    pool: Pool = app.state.db_pool
+    radius = 1000  # 1km
+    nodes = await get_nodes_within_radius(pool, lat, lon, radius)
+    print(f"Fetched {len(nodes)} nodes around ({lat}, {lon})")
+    return nodes

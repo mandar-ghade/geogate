@@ -1,2 +1,4 @@
+asyncpg
 fastapi
+python-dotenv
 uvicorn

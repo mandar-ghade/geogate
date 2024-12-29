@@ -4,7 +4,7 @@ from util import to_camel_case
 
 class NodeType(str, Enum):
     TREE = "tree"
-    ROCK_BASIC = "rockBASIC"
+    ROCK_BASIC = "rockBasic"
     ROCK_COPPER = "rockCopper"
     ROCK_IRON = "rockIron"
 
@@ -26,4 +26,3 @@ class ResourceNode(BaseModel):
     class Config:
         alias_generator = to_camel_case
         populate_by_name = True
-        allow_population_by_field_name = True
