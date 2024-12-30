@@ -4,7 +4,7 @@ from asyncpg import Pool
 from fastapi import FastAPI
 
 from db.connection import get_db_pool
-from db.queries import get_nodes_within_radius
+from db.queries import get_nodes_within_radius, insert_resource_node
 from models import NodeType, ResourceNode, NODE_TYPE_WEIGHTS
 from middleware import init_middleware
 
@@ -29,6 +29,11 @@ def get_random_node_type() -> NodeType:
     return random.choices(types, weights=weights, k=1)[0]
 
 
+def parse_node_type(type_str: str) -> NodeType:
+    NODE_TYPE_WEIGHTS.keys()
+    return NodeType(type_str)
+
+
 @app.get("/api")
 async def get_root():
     return {"message": "This is an API"}
@@ -36,8 +41,19 @@ async def get_root():
 
 @app.get("/api/nodes")
 async def get_nodes(lat: float, lon: float) -> list[ResourceNode]:
-    pool: Pool = app.state.db_pool
     radius = 1000  # 1km
-    nodes = await get_nodes_within_radius(pool, lat, lon, radius)
+    pool: Pool = app.state.db_pool
+    async with pool.acquire() as conn:
+        nodes = await get_nodes_within_radius(conn, lat, lon, radius)
     print(f"Fetched {len(nodes)} nodes around ({lat}, {lon})")
     return nodes
+
+
+@app.post("/api/nodes")
+async def create_node(lat: float, lon: float, node_type: str):
+    if node_type not in NODE_TYPE_WEIGHTS.keys():
+        return {"error": f"Unknown node type '{node_type}'"}
+    pool: Pool = app.state.db_pool
+    async with pool.acquire() as conn:
+        node_id = await insert_resource_node(conn, NodeType(node_type), lat, lon)
+    return {"id": node_id}
