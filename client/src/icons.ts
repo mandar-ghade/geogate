@@ -1,4 +1,5 @@
 import { Icon } from "leaflet";
+import { NodeType } from "./types";
 
 // https://www.flaticon.com/free-icon/rhombus_10239023?term=diamond+shape&page=1&position=25&origin=search&related_id=10239023
 export const userIcon = new Icon({
@@ -39,3 +40,17 @@ export const ironNodeIcon = new Icon({
   iconAnchor: [12, 12],
   className: "cursor-default",
 });
+
+export function getResourceIcon(nodeType: NodeType) {
+  switch (nodeType) {
+    case NodeType.TREE:
+      return treeNodeIcon;
+    case NodeType.ROCK_BASIC:
+      return stoneNodeIcon;
+    case NodeType.ROCK_COPPER:
+      return copperNodeIcon;
+    case NodeType.ROCK_IRON:
+      return ironNodeIcon;
+  }
+}
+

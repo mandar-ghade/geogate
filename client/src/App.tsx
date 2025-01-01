@@ -1,4 +1,3 @@
-import { LatLngExpression, Icon } from 'leaflet';
 import {
   MapContainer,
   Marker,
@@ -7,49 +6,13 @@ import {
   useMap,
 } from 'react-leaflet';
 import { useEffect, useState } from 'react';
-import { ResourceNode, NodeType} from "./types"
-import {
-  userIcon,
-  treeNodeIcon,
-  stoneNodeIcon,
-  copperNodeIcon,
-  ironNodeIcon,
-} from "./icons"
+import { userIcon, getResourceIcon } from "./icons"
+import { fetchResourceNodes } from './queries';
+import { ResourceNode } from "./types"
 
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 
-function getResourceIcon(nodeType: NodeType) {
-  switch (nodeType) {
-    case NodeType.TREE:
-      return treeNodeIcon;
-    case NodeType.ROCK_BASIC:
-      return stoneNodeIcon;
-    case NodeType.ROCK_COPPER:
-      return copperNodeIcon;
-    case NodeType.ROCK_IRON:
-      return ironNodeIcon;
-  }
-}
-
-async function fetchResourceNodes(
-  lat: number, lon: number,
-): Promise<ResourceNode[]> {
-  const url = `http://localhost:8000/api/nodes?lat=${lat}&lon=${lon}&radius=${100}`;
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch resource nodes: ${response.statusText}`);
-    }
-
-    const data: ResourceNode[] = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching resource nodes:", error);
-    return [];
-  }
-};
 export default function App() {
   const [userPos, setUserPos] = useState<[number, number] | null>(null);
   const [nodes, setNodes] = useState<ResourceNode[]>([]);
