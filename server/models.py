@@ -26,3 +26,13 @@ class ResourceNode(BaseModel):
     class Config:
         alias_generator = to_camel_case
         populate_by_name = True
+
+
+class NodeInsertBody(BaseModel):
+    lat: float
+    lon: float
+    node_type: str
+
+    class Config:
+        alias_generator = to_camel_case
+        populate_by_name = True
