@@ -13,46 +13,27 @@ import { Coords, getRandomNodeType, ResourceNode } from "./types"
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 import { getRandomCoordinates } from './util';
+import { useLocation } from './hooks/useLocation';
 
 export default function App() {
-  const [userPos, setUserPos] = useState<Coords | null>(null);
+  const { position: userPos } = useLocation();
   const [nodes, setNodes] = useState<ResourceNode[]>([]);
 
   async function loadResourceNodes() {
-      if (!userPos) return;
-
-      const { lat, lon } = userPos;
-      console.log(`Fetching coords ${lat}, ${lon}`);
-      const newNodes = await fetchResourceNodes(userPos);
-      if (!newNodes) {
-        setNodes([]);
-      } else {
-        setNodes(newNodes);
-      }
+    if (!userPos) return;
+    console.log(`Fetching coords ${userPos.lat}, ${userPos.lon}`);
+    const newNodes = await fetchResourceNodes(userPos);
+    if (!newNodes) {
+      setNodes([]);
+    } else {
+      setNodes(newNodes);
+    }
   }
 
   useEffect(() => {
     loadResourceNodes();
   }, [userPos]);
 
-  useEffect(() => {
-    const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const newCoords = {
-          lat: pos.coords.latitude,
-          lon: pos.coords.longitude,
-        };
-        console.log("User location:", newCoords)
-        setUserPos(newCoords);
-      },
-      (error) => {
-        console.error("Geolocation error:", error);
-      },
-      { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 },
-    );
-
-    return () => navigator.geolocation.clearWatch(watchId); // cleanup
-  }, []);
 
   if (!userPos) {
     return <h2>Locating Position...</h2>;
