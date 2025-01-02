@@ -1,6 +1,11 @@
 from enum import Enum
 from pydantic import BaseModel, Field
-from util import to_camel_case
+
+
+class Coords(BaseModel):
+    lat: float = Field(ge=-90, le=90)  # -90 <= lat <= 90
+    lon: float = Field(ge=-180, le=180)  # -180 <= lon <= 180
+
 
 class NodeType(str, Enum):
     TREE = "tree"
@@ -19,20 +24,10 @@ NODE_TYPE_WEIGHTS = {
 
 class ResourceNode(BaseModel):
     id: int
-    node_type: NodeType
-    lat: float = Field(ge=-90, le=90)  # -90 <= lat <= 90
-    lon: float = Field(ge=-180, le=180)  # -180 <= lon <= 180
-
-    class Config:
-        alias_generator = to_camel_case
-        populate_by_name = True
+    node_type: NodeType = Field(..., alias="nodeType")
+    coords: Coords
 
 
 class NodeInsertBody(BaseModel):
-    lat: float
-    lon: float
-    node_type: str
-
-    class Config:
-        alias_generator = to_camel_case
-        populate_by_name = True
+    node_type: NodeType = Field(..., alias="nodeType")
+    coords: Coords

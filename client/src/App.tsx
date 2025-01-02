@@ -8,21 +8,22 @@ import {
 import { useEffect, useState } from 'react';
 import { userIcon, getResourceIcon } from "./icons"
 import { fetchResourceNodes, insertResourceNode } from './queries';
-import { getRandomNodeType, ResourceNode } from "./types"
+import { Coords, getRandomNodeType, ResourceNode } from "./types"
 
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 import { getRandomCoordinates } from './util';
 
 export default function App() {
-  const [userPos, setUserPos] = useState<[number, number] | null>(null);
+  const [userPos, setUserPos] = useState<Coords | null>(null);
   const [nodes, setNodes] = useState<ResourceNode[]>([]);
 
   async function loadResourceNodes() {
       if (!userPos) return;
-      const [lat, lon] = userPos;
+
+      const { lat, lon } = userPos;
       console.log(`Fetching coords ${lat}, ${lon}`);
-      const newNodes = await fetchResourceNodes(lat, lon);
+      const newNodes = await fetchResourceNodes(userPos);
       if (!newNodes) {
         setNodes([]);
       } else {
@@ -37,9 +38,12 @@ export default function App() {
   useEffect(() => {
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
-        console.log("User location:", [pos.coords.latitude,
-                                       pos.coords.longitude])
-        setUserPos([pos.coords.latitude, pos.coords.longitude]);
+        const newCoords = {
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+        };
+        console.log("User location:", newCoords)
+        setUserPos(newCoords);
       },
       (error) => {
         console.error("Geolocation error:", error);
@@ -56,14 +60,14 @@ export default function App() {
 
   async function insertRandomNode() {
     if (userPos === null) return;
-    const { lat, lon } = getRandomCoordinates(...userPos, 100);
+    const coords = getRandomCoordinates(userPos, 100);
     const nodeType = getRandomNodeType();
-    console.log(`Creating a ${nodeType} node at (${lat}, ${lon})`);
-    const newNodeId = await insertResourceNode(lat, lon, nodeType);
-    if (newNodeId === null) {
+    console.log(`Creating a ${nodeType} node at (${coords.lat}, ${coords.lon})`);
+    const nodeId = await insertResourceNode(coords, nodeType);
+    if (nodeId === null) {
       console.error('No returned node id');
     } else {
-      console.log(`Successfully inserted node (id: ${newNodeId})`);
+      console.log(`Successfully inserted node (id: ${nodeId})`);
     }
   }
 
@@ -75,21 +79,20 @@ export default function App() {
   );
 }
 
-async function copyCoordsToClipboard(lat: number, lon: number) {
-  const coordsMsg = `${lat}, ${lon}`;
+async function copyCoordsToClipboard(coords: Coords) {
+  const coordsMsg = `${coords.lat}, ${coords.lon}`;
   await navigator.clipboard.writeText(coordsMsg);
 }
 
 function GameMap(props: {
-  userPos: [number, number],
-  nodes: ResourceNode[],
+  userPos: Coords, nodes: ResourceNode[]
 }) {
   const { userPos, nodes } = props;
-  // console.log("userPos:", userPos);
+
   return (
     <MapContainer
       style={{height: "100vh"}}
-      center={userPos}
+      center={[userPos.lat, userPos.lon]}
       zoom={17}
       dragging={false}
       zoomControl={false}
@@ -104,14 +107,14 @@ function GameMap(props: {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <MapUpdater center={userPos} />
-      <Marker position={userPos} icon={userIcon}>
+      <Marker position={[userPos.lat, userPos.lon]} icon={userIcon}>
         <Popup>
           User<br/>
-          lat: {userPos[0].toFixed(5)}{" "}
-          lon: {userPos[1].toFixed(5)}
+          lat: {userPos.lat.toFixed(5)}{" "}
+          lon: {userPos.lon.toFixed(5)}
           <br/>
           <button onClick={async () => {
-            await copyCoordsToClipboard(userPos[0], userPos[1]);
+            await copyCoordsToClipboard(userPos);
           }}>
             Copy to Clipboard
           </button>
@@ -119,17 +122,17 @@ function GameMap(props: {
       </Marker>
       {nodes.map((node, idx) => (
         <Marker
-          position={[node.lat, node.lon]}
+          position={[node.coords.lat, node.coords.lon]}
           icon={getResourceIcon(node.nodeType)}
           key={idx}
         >
           <Popup>
             {node.nodeType}<br/>
-            lat: {node.lat.toFixed(5)}{" "}
-            lon: {node.lon.toFixed(5)}
+            lat: {node.coords.lat.toFixed(5)}{" "}
+            lon: {node.coords.lon.toFixed(5)}
             <br/>
             <button onClick={async () => {
-              await copyCoordsToClipboard(node.lat, node.lon);
+              await copyCoordsToClipboard(node.coords);
             }}>
               Copy to Clipboard
             </button>
@@ -140,10 +143,10 @@ function GameMap(props: {
   );
 }
 
-function MapUpdater({ center }: { center: [number, number] }) {
+function MapUpdater({ center }: { center: Coords }) {
   const map = useMap(); // gets the closest parent <MapContainer />
   useEffect(() => {
-    map.setView(center);
+    map.setView([center.lat, center.lon]);
   }, [center, map]);
   return null;
 }

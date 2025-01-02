@@ -5,7 +5,7 @@ from fastapi import FastAPI
 
 from db.connection import get_db_pool
 from db.queries import get_nodes_within_radius, insert_resource_node
-from models import NodeInsertBody, NodeType, ResourceNode, NODE_TYPE_WEIGHTS
+from models import Coords, NodeInsertBody, NodeType, ResourceNode, NODE_TYPE_WEIGHTS
 from middleware import init_middleware
 
 
@@ -41,22 +41,19 @@ async def get_root():
 
 @app.get("/api/nodes")
 async def get_nodes(lat: float, lon: float) -> list[ResourceNode]:
+    coords = Coords(lat=lat, lon=lon)
     radius = 1000  # 1km
     pool: Pool = app.state.db_pool
     async with pool.acquire() as conn:
-        nodes = await get_nodes_within_radius(conn, lat, lon, radius)
-    print(f"Fetched {len(nodes)} nodes around ({lat}, {lon})")
+        nodes = await get_nodes_within_radius(conn, coords, radius)
+    print(f"Fetched {len(nodes)} nodes around {coords}")
     return nodes
 
 
 @app.post("/api/nodes")
 async def post_node(body: NodeInsertBody):
-    if body.node_type not in NODE_TYPE_WEIGHTS.keys():
-        return {"error": f"Unknown node type '{body.node_type}'"}
     pool: Pool = app.state.db_pool
     async with pool.acquire() as conn:
-        node_id = await insert_resource_node(
-            conn, NodeType(body.node_type), body.lat, body.lon
-        )
-    print(f"Inserted node with (id: {node_id})")
+        node_id = await insert_resource_node(conn, body.node_type, body.coords)
+    print(f"Inserted node (id={node_id}) at {body.coords}")
     return {"id": node_id}

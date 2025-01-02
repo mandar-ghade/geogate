@@ -1,9 +1,10 @@
-import { NodeType, ResourceNode } from "./types";
+import { Coords, NodeType, ResourceNode } from "./types";
 
 export async function fetchResourceNodes(
-  lat: number, lon: number,
+  coords: Coords
 ): Promise<ResourceNode[] | null> {
-  const url = `http://localhost:8000/api/nodes?lat=${lat}&lon=${lon}`;
+  const url =
+    `http://localhost:8000/api/nodes?lat=${coords.lat}&lon=${coords.lon}`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -18,12 +19,10 @@ export async function fetchResourceNodes(
 };
 
 export async function insertResourceNode(
-  lat: number,
-  lon: number,
-  nodeType: NodeType,
+  coords: Coords, nodeType: NodeType
 ): Promise<number | null> {
   const url = `http://localhost:8000/api/nodes`;
-  const body = JSON.stringify({ lat, lon, nodeType });
+  const body = JSON.stringify({ coords, nodeType });
   try {
     const response = await fetch(url, {
       method: "POST",
