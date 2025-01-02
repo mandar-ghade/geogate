@@ -14,34 +14,21 @@ import 'leaflet/dist/leaflet.css';
 import './App.css';
 import { getRandomCoordinates } from './util';
 import { useLocation } from './hooks/useLocation';
+import { useResourceNodes } from './hooks/useResourceNodes';
 
 export default function App() {
-  const { position: userPos } = useLocation();
-  const [nodes, setNodes] = useState<ResourceNode[]>([]);
+  const { position } = useLocation();
+  const { nodes, refreshNodes } = useResourceNodes(position, {
+    updateInterval: 5_000,
+  });
 
-  async function loadResourceNodes() {
-    if (!userPos) return;
-    console.log(`Fetching coords ${userPos.lat}, ${userPos.lon}`);
-    const newNodes = await fetchResourceNodes(userPos);
-    if (!newNodes) {
-      setNodes([]);
-    } else {
-      setNodes(newNodes);
-    }
-  }
-
-  useEffect(() => {
-    loadResourceNodes();
-  }, [userPos]);
-
-
-  if (!userPos) {
+  if (!position) {
     return <h2>Locating Position...</h2>;
   }
 
   async function insertRandomNode() {
-    if (userPos === null) return;
-    const coords = getRandomCoordinates(userPos, 100);
+    if (position === null) return;
+    const coords = getRandomCoordinates(position, 100);
     const nodeType = getRandomNodeType();
     console.log(`Creating a ${nodeType} node at (${coords.lat}, ${coords.lon})`);
     const nodeId = await insertResourceNode(coords, nodeType);
@@ -49,13 +36,14 @@ export default function App() {
       console.error('No returned node id');
     } else {
       console.log(`Successfully inserted node (id: ${nodeId})`);
+      await refreshNodes();
     }
   }
 
   return (
     <>
       <button onClick={insertRandomNode}>Generate New Node</button>
-      <GameMap userPos={userPos} nodes={nodes} />
+      <GameMap position={position} nodes={nodes} />
     </>
   );
 }
@@ -66,14 +54,14 @@ async function copyCoordsToClipboard(coords: Coords) {
 }
 
 function GameMap(props: {
-  userPos: Coords, nodes: ResourceNode[]
+  position: Coords, nodes: ResourceNode[]
 }) {
-  const { userPos, nodes } = props;
+  const { position, nodes } = props;
 
   return (
     <MapContainer
       style={{height: "100vh"}}
-      center={[userPos.lat, userPos.lon]}
+      center={[position.lat, position.lon]}
       zoom={17}
       dragging={false}
       zoomControl={false}
@@ -87,15 +75,15 @@ function GameMap(props: {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <MapUpdater center={userPos} />
-      <Marker position={[userPos.lat, userPos.lon]} icon={userIcon}>
+      <MapUpdater center={position} />
+      <Marker position={[position.lat, position.lon]} icon={userIcon}>
         <Popup>
           User<br/>
-          lat: {userPos.lat.toFixed(5)}{" "}
-          lon: {userPos.lon.toFixed(5)}
+          lat: {position.lat.toFixed(5)}{" "}
+          lon: {position.lon.toFixed(5)}
           <br/>
           <button onClick={async () => {
-            await copyCoordsToClipboard(userPos);
+            await copyCoordsToClipboard(position);
           }}>
             Copy to Clipboard
           </button>
