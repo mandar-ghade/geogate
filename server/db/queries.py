@@ -40,17 +40,18 @@ async def get_nodes_within_radius(
 
 
 async def insert_resource_node(
-    conn: Connection, node_type: NodeType, longitude: float, latitude: float
+    conn: Connection, node_type: NodeType, latitude: float, longitude: float
 ) -> int:
     """Inserts a new resource node into the database and
     returns the ID of the newly created resource node.
     """
+    print(f"Inserted node at ({latitude}, {longitude})")
     query = """
     INSERT INTO resource_nodes (node_type, location)
     VALUES ($1, ST_SetSRID(ST_MakePoint($2, $3), 4326))
     RETURNING id;
     """
-    res = await conn.fetchval(query, str(node_type), longitude, latitude)
+    res = await conn.fetchval(query, node_type.value, longitude, latitude)
     if not isinstance(res, int):
         raise ValueError(f"Unexpected return on insertion: {res}")
     return res

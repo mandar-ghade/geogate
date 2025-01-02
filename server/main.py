@@ -58,4 +58,5 @@ async def post_node(body: NodeInsertBody):
         node_id = await insert_resource_node(
             conn, NodeType(body.node_type), body.lat, body.lon
         )
+    print(f"Inserted node with (id: {node_id})")
     return {"id": node_id}
