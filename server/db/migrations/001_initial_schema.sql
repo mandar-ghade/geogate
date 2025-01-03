@@ -4,7 +4,7 @@ CREATE TABLE resource_nodes (
     id SERIAL PRIMARY KEY,
     node_type TEXT NOT NULL,
     location GEOGRAPHY(Point, 4326),
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Add a spatial index to optimize geospatial queries
