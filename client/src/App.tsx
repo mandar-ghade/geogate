@@ -5,16 +5,15 @@ import {
   TileLayer,
   useMap,
 } from 'react-leaflet';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { userIcon, getResourceIcon } from "./icons"
-import { fetchResourceNodes, insertResourceNode } from './queries';
-import { Coords, getRandomNodeType, ResourceNode } from "./types"
+import { Coords, ResourceNode } from "./types"
 
 import 'leaflet/dist/leaflet.css';
 import './App.css';
-import { getRandomCoordinates } from './util';
 import { useLocation } from './hooks/useLocation';
 import { useResourceNodes } from './hooks/useResourceNodes';
+import { GenRandomNodeButton } from './components/GenRandomNodeButton';
 
 export default function App() {
   const { position } = useLocation();
@@ -26,23 +25,9 @@ export default function App() {
     return <h2>Locating Position...</h2>;
   }
 
-  async function insertRandomNode() {
-    if (position === null) return;
-    const coords = getRandomCoordinates(position, 100);
-    const nodeType = getRandomNodeType();
-    console.log(`Creating a ${nodeType} node at (${coords.lat}, ${coords.lon})`);
-    const nodeId = await insertResourceNode(coords, nodeType);
-    if (nodeId === null) {
-      console.error('No returned node id');
-    } else {
-      console.log(`Successfully inserted node (id: ${nodeId})`);
-      await refreshNodes();
-    }
-  }
-
   return (
     <>
-      <button onClick={insertRandomNode}>Generate New Node</button>
+      <GenRandomNodeButton position={position} refreshNodes={refreshNodes} />
       <GameMap position={position} nodes={nodes} />
     </>
   );
