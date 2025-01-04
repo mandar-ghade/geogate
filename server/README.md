@@ -64,3 +64,14 @@ $ psql -U postgres
 \c geogate
 CREATE EXTENSION postgis;
 ```
+
+## Configuring Server
+### PostgreSQL server config
+To will have to create a `.env` file in the following format to configure the server for the database on your machine.
+```dotenv
+DB_HOST=localhost # running on local machine
+DB_PORT=5432 # default Postgres port
+DB_NAME=geogate
+DB_USER=<your-user>
+DB_PASSWORD=<your-password>
+```
