@@ -47,7 +47,7 @@ GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO <your-user>;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO <your-user>;
 ```
 
-### Bootstrap Database Schema
+### Bootstraping Database Schema
 You can then open `psql` as your user (this happens by default if it matches your Unix username) in the Geogate database
 ```bash
 $ psql -U <your-user> -d geogate
