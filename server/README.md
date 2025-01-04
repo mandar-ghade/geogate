@@ -15,6 +15,7 @@ $ uvicorn main:app --reload
 ```
 
 ## Setting up PostgreSQL
+### Installing PostgreSQL and Extensions
 To set up the database, you must first install the PostgreSQL and PostGIS packages on your system:
 ```bash
 $ sudo apt install postgresql
@@ -22,6 +23,7 @@ $ sudo apt install postgis
 ```
 **Note:** `apt` is the Debian package manager used as example, you must use your system's appropriate package manager (e.g. `brew` for MacOS, also omit the `sudo` for MacOS).
 
+### Creating Geogate Database
 You then must start the `postgresql` service. For systemd users, run the command:
 ```bash
 $ sudo systemctl start postgresql
@@ -44,6 +46,8 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO <your-user>;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO <your-user>;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO <your-user>;
 ```
+
+### Bootstrap Database Schema
 You can then open `psql` as your user (this happens by default if it matches your Unix username) in the Geogate database
 ```bash
 $ psql -U <your-user> -d geogate
