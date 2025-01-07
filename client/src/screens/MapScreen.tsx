@@ -12,13 +12,18 @@ export function MapScreen({ setScreen }: { setScreen: ScreenHandler }) {
   });
 
   if (!position) {
-    return <h2>Locating Position...</h2>;
+    return <h2 className="text-xl font-bold">Locating Position...</h2>;
   }
 
   return (
     <>
       <GenRandomNodeButton position={position} refreshNodes={refreshNodes} />
-      <button onClick={() => setScreen("login")}>Logout</button>
+      <button
+        className="border border-black px-4 py-1 rounded"
+        onClick={() => setScreen("login")}
+      >
+        Logout
+      </button>
       <GameMap position={position} nodes={nodes} />
     </>
   );

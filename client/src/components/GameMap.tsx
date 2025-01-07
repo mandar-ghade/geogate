@@ -16,7 +16,7 @@ export function GameMap(props: {
 
   return (
     <MapContainer
-      style={{height: "100vh"}}
+      className="h-full"
       center={[position.lat, position.lon]}
       zoom={17}
       dragging={false}
