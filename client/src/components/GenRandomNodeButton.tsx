@@ -23,7 +23,7 @@ export function GenRandomNodeButton({ position, refreshNodes }: {
 
   return (
       <button
-        className="border border-black px-4 py-1 rounded"
+        className="bg-zinc-600 px-4 py-1 rounded"
         onClick={insertRandomNode}
       >
         Generate New Node

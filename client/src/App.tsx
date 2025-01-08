@@ -1,22 +1,17 @@
 import { useState } from "react";
 import { Screen } from "./types";
-import { MapScreen } from "./screens/MapScreen";
+import { GameScreen } from "./screens/GameScreen";
 import { LoginScreen } from "./screens/LoginScreen";
 import { RegisterScreen } from "./screens/RegisterScreen";
-import "./App.css";
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("login");
 
-  if (screen === "register") {
-    return <RegisterScreen setScreen={setScreen}/>;
-  }
-
-  if (screen === "login") {
-    return <LoginScreen setScreen={setScreen}/>;
-  }
-
-  if (screen === "game") {
-    return <MapScreen setScreen={setScreen} />;
-  }
+  return (
+    <div className="bg-zinc-700 h-screen">
+      {screen === "login" && <LoginScreen setScreen={setScreen} />}
+      {screen === "register" && <RegisterScreen setScreen={setScreen} />}
+      {screen === "game" && <GameScreen setScreen={setScreen} />}
+    </div>
+  );
 }

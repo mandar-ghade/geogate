@@ -33,7 +33,7 @@ export function GameMap(props: {
       />
       <MapUpdater center={position} />
       <Marker position={[position.lat, position.lon]} icon={userIcon}>
-        <Popup>
+        <Popup className="cursor-pointer">
           User<br/>
           lat: {position.lat.toFixed(5)}{" "}
           lon: {position.lon.toFixed(5)}
@@ -51,7 +51,7 @@ export function GameMap(props: {
           icon={getResourceIcon(node.nodeType)}
           key={idx}
         >
-          <Popup>
+          <Popup className="cursor-pointer">
             {node.nodeType}<br/>
             lat: {node.coords.lat.toFixed(5)}{" "}
             lon: {node.coords.lon.toFixed(5)}

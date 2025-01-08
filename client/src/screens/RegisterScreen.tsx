@@ -6,14 +6,14 @@ export function RegisterScreen({ setScreen }: { setScreen: ScreenHandler }) {
       <h2 className="text-lg font-bold">Register:</h2>
       <input
         type="text" placeholder="user"
-        className="border border-black px-2 py-1 rounded"
+        className="px-2 py-1 rounded"
       />
       <input
         type="text" placeholder="password"
-        className="border border-black px-2 py-1 rounded"
+        className=" px-2 py-1 rounded"
       />
       <button
-        className="border border-black px-4 py-1 rounded"
+        className="bg-zinc-600 px-4 py-1 rounded"
         onClick={() => setScreen("login")}
       >
         Submit
