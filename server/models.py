@@ -1,4 +1,6 @@
+from datetime import datetime
 from enum import Enum
+from typing import Optional
 from pydantic import BaseModel, Field
 
 
@@ -28,6 +30,19 @@ class ResourceNode(BaseModel):
     coords: Coords
 
 
-class NodeInsertBody(BaseModel):
+class NodeCreate(BaseModel):
     node_type: NodeType = Field(..., alias="nodeType")
     coords: Coords
+
+
+class User(BaseModel):
+    id: int
+    username: str
+    email: Optional[str]
+    created_at: datetime
+
+
+class UserCreate(BaseModel):
+    username: str
+    password: str
+    email: Optional[str] = None

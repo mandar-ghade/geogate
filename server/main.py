@@ -1,12 +1,15 @@
 import random
+from argon2 import PasswordHasher
 from contextlib import asynccontextmanager
 from asyncpg import Pool
 from fastapi import FastAPI
 
 from db.connection import get_db_pool
-from db.queries import get_nodes_within_radius, insert_resource_node
-from models import Coords, NodeInsertBody, NodeType, ResourceNode, NODE_TYPE_WEIGHTS
+from db.queries import get_nodes_within_radius, insert_resource_node, insert_user
+from models import Coords, NodeCreate, NodeType, ResourceNode, NODE_TYPE_WEIGHTS, User, UserCreate
 from middleware import init_middleware
+
+ph = PasswordHasher()
 
 
 @asynccontextmanager
@@ -51,9 +54,20 @@ async def get_nodes(lat: float, lon: float) -> list[ResourceNode]:
 
 
 @app.post("/api/nodes")
-async def post_node(body: NodeInsertBody):
+async def post_node(body: NodeCreate):
     pool: Pool = app.state.db_pool
     async with pool.acquire() as conn:
         node_id = await insert_resource_node(conn, body.node_type, body.coords)
     print(f"Inserted node (id={node_id}) at {body.coords}")
     return {"id": node_id}
+
+
+@app.post("/api/register")
+async def register_user(user: UserCreate) -> User:
+    pool: Pool = app.state.db_pool
+    password_hash = ph.hash(user.password)
+    async with pool.acquire() as conn:
+        new_user = await insert_user(
+            conn, user.username, password_hash, user.email
+        )
+    return new_user

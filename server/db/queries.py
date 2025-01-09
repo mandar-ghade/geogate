@@ -1,5 +1,8 @@
+from typing import Optional
 from asyncpg import Connection
-from models import Coords, NodeType, ResourceNode
+import asyncpg
+from fastapi import HTTPException
+from models import Coords, NodeType, ResourceNode, User
 
 
 async def get_nodes_within_radius(
@@ -23,7 +26,6 @@ async def get_nodes_within_radius(
         );
     """
     rows = await conn.fetch(query, coords.lon, coords.lat, radius)
-    # print(rows)
     return [
         ResourceNode(
             id=row["id"],
@@ -49,5 +51,37 @@ async def insert_resource_node(
     """
     res = await conn.fetchval(query, node_type.value, coords.lon, coords.lat)
     if not isinstance(res, int):
-        raise ValueError(f"Unexpected return on insertion: {res}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unexpected return on insertion: {res}",
+        )
     return res
+
+
+async def insert_user(
+        conn: Connection, username: str, password_hash, email: Optional[str]
+) -> User:
+    query = """
+    INSERT INTO users (username, password_hash, email)
+    VALUES ($1, $2, $3)
+    RETURNING id, username, email, created_at
+    """
+    try:
+        user_row = await conn.fetchrow(query, username, password_hash, email)
+    except asyncpg.UniqueViolationError:
+        raise HTTPException(
+            status_code=400,
+            detail="Username or email already used",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+    if user_row is None:
+        print("Failed to create user")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to create user",
+        )
+    return User.model_validate(dict(user_row))

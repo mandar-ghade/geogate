@@ -1,3 +1,4 @@
+argon2-cffi
 asyncpg
 fastapi
 python-dotenv
