@@ -20,7 +20,7 @@ export function GameScreen({ setScreen }: { setScreen: ScreenHandler }) {
       <div className="flex flex-row gap-1 m-1">
         <GenRandomNodeButton position={position} refreshNodes={refreshNodes} />
         <button
-          className="bg-zinc-600 px-4 py-1 rounded"
+          className="bg-zinc-600 px-4 py-1 rounded hover:bg-zinc-500"
           onClick={() => setScreen("login")}
         >
           Logout
