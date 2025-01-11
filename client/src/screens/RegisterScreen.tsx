@@ -55,7 +55,7 @@ export function RegisterScreen({ setScreen }: { setScreen: ScreenHandler }) {
         placeholder="username"
         value={formData.username}
         onChange={(e) => {
-          setFormData(prev => ({ ...prev, username: e.target.value }))
+          setFormData(prev => ({ ...prev, username: e.target.value }));
         }}
         className="px-2 py-1 rounded text-zinc-800"
         required
@@ -65,7 +65,7 @@ export function RegisterScreen({ setScreen }: { setScreen: ScreenHandler }) {
         placeholder="password"
         value={formData.password}
         onChange={(e) => {
-          setFormData(prev => ({ ...prev, password: e.target.value }))
+          setFormData(prev => ({ ...prev, password: e.target.value }));
         }}
         className="px-2 py-1 rounded text-zinc-800"
         required
