@@ -55,7 +55,7 @@ Next, bootstrap the database by executing the `schema.sql` file.
 ```
 **Note:** This will not work unless you are running `psql` as the `postgres` superuser.
 
-### Grant User Permissions
+### Granting User Permissions
 Then, still as the superuser, grant the appropriate permissions to your user (as well as set the default permissions for any future schema alterations).
 ```sql
 GRANT USAGE ON SCHEMA public TO <your-user>;
@@ -67,6 +67,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO <you
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO <your-user>;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO <your-user>;
 ```
+**Note:** This must be done WITHIN the `geogate` database; otherwise, it will not grant the correct permissions.
 
 ## Configuring Server
 ### PostgreSQL server config
@@ -78,4 +79,4 @@ DB_NAME=geogate
 DB_USER=<your-user>
 DB_PASSWORD=<your-password>
 ```
-**Note:** This file contains secrets and should NEVER be shared. Ensure that it is in the `.gitignore` file before pushing to any public repositories (Github).
+**Note:** This file contains secrets and should NEVER be shared. Ensure that it is in the `.gitignore` file before pushing to any public repositories (like Github).
