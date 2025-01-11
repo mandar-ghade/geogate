@@ -1,4 +1,6 @@
+from datetime import datetime
 from typing import Optional
+from argon2 import PasswordHasher
 from asyncpg import Connection
 import asyncpg
 from fastapi import HTTPException
@@ -85,3 +87,25 @@ async def insert_user(
             detail="Failed to create user",
         )
     return User.model_validate(dict(user_row))
+
+
+async def get_user_password_hash(
+    conn: Connection, username: str
+) -> tuple[int, str] | None:
+    query = """
+    SELECT id, password_hash FROM users WHERE username = $1
+    """
+    row = await conn.fetchrow(query, username)
+    if row is None:
+        return None
+    return (row['id'], row['password_hash'])
+
+
+async def create_auth_session(
+    conn, user_id: int, token_hash: str, expires_at: datetime
+) -> None:
+    query = """
+    INSERT INTO auth_sessions (user_id, session_token_hash, expires_at)
+    VALUES ($1, $2, $3)
+    """
+    await conn.execute(query, user_id, token_hash, expires_at)

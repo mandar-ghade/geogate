@@ -3,7 +3,7 @@ CREATE TABLE users (
     username VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,  -- Make nullable to add OAuth
     email VARCHAR(255) UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE auth_sessions (
@@ -12,8 +12,8 @@ CREATE TABLE auth_sessions (
         REFERENCES users(id) 
         ON DELETE CASCADE,
     session_token_hash VARCHAR(255) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP NOT NULL
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE game_sessions (
@@ -25,7 +25,7 @@ CREATE TABLE game_sessions (
         REFERENCES auth_sessions(id)
         ON DELETE CASCADE,
     location GEOMETRY(Point, 4326),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create index for faster session token lookups
