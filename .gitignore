@@ -8,3 +8,6 @@
 *.njsproj
 *.sln
 *.sw?
+
+# Personal notes
+NOTES.md
