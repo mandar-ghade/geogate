@@ -28,41 +28,44 @@ You then must start the `postgresql` service. For systemd users, run the command
 ```bash
 $ sudo systemctl start postgresql
 ```
-At this point, you may create a PostgreSQL user (preferably matching your Unix username) to be the owner of the database. This is optional and you may, alternatively, follow the subsequent commands with the PostgreSQL superuser (`postgres`) instead.
+At this point, create a PostgreSQL user (preferably matching your Unix username) to be the owner of the database.
 
 Next, open `psql` as the `postgres` superuser.
 ```bash
 $ psql -U postgres
 ```
-You can then add the `postgis` extension and create a database for Geogate owned by your PostgreSQL user.
+You can then add the `postgis` extension (might be unnecessary) and create a database for Geogate owned by your PostgreSQL user.
 ```sql
 CREATE EXTENSION postgis;
 CREATE DATABASE geogate OWNER <your-user>;
 ```
-Then, still as the superuser, grant the appropriate permissions to your user (skip if only using the superuser).
+
+### Bootstrapping Database Schema
+You can then bootstrap the database schema still as the `postgres` superuser. You can enter the database if you are still in the `psql` shell by running
+```sql
+\c geogate
+```
+or, by creating a new `psql` shell in the database with
+```bash
+$ psql -U <your-user> -d geogate
+```
+Next, bootstrap the database by executing the `schema.sql` file.
+```sql
+\ir ./server/db/schema.sql
+```
+**Note:** This will not work unless you are running `psql` as the `postgres` superuser.
+
+### Grant User Permissions
+Then, still as the superuser, grant the appropriate permissions to your user (as well as set the default permissions for any future schema alterations).
 ```sql
 GRANT USAGE ON SCHEMA public TO <your-user>;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO <your-user>;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO <your-user>;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO <your-user>;
-```
 
-### Bootstrapping Database Schema
-You can then open `psql` as your user (this happens by default if it matches your Unix username) in the Geogate database
-```bash
-$ psql -U <your-user> -d geogate
-```
-and bootstrap the database by executing the `schema.sql` file.
-```sql
-\ir ./server/db/schema.sql
-```
-Also, if you are having issues with `schema.sql`, you can try creating the extension (or running the entire script) as the `postgres` superuser.
-```bash
-$ psql -U postgres
-```
-```sql
-\c geogate
-CREATE EXTENSION postgis;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO <your-user>;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO <your-user>;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO <your-user>;
 ```
 
 ## Configuring Server
@@ -75,3 +78,4 @@ DB_NAME=geogate
 DB_USER=<your-user>
 DB_PASSWORD=<your-password>
 ```
+**Note:** This file contains secrets and should NEVER be shared. Ensure that it is in the `.gitignore` file before pushing to any public repositories (Github).
