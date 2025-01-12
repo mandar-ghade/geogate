@@ -124,7 +124,10 @@ async def login(request: LoginRequest, response: Response):
                 max_age=session_length.seconds,
             )
             
-            return {"message": "Logged in successfully"}
+            return {
+                "message": "Logged in successfully",
+                "userId": user_id,
+            }
     except HTTPException:
         raise
     except Exception as e:

@@ -11,9 +11,9 @@ export function LoginScreen({ setScreen }: { setScreen: ScreenHandler }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const setUsername = useUserStore((state) => state.setUsername);
-  // const setUserId = useUserStore((state) => state.setUserId);
+  const setUserId = useUserStore((state) => state.setUserId);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setIsLoading(true);
@@ -31,8 +31,14 @@ export function LoginScreen({ setScreen }: { setScreen: ScreenHandler }) {
         const errorData = await response.json();
         throw new Error(errorData.detail || "Login failed");
       }
+      const responseData = await response.json();
+      console.log(responseData);
+      if (typeof responseData.userId !== "number") {  // Improve type validation
+        throw Error("UserId not in login response");
+      }
       // Update user store and switch screens
       setUsername(formData.username);
+      setUserId(responseData.userId);
       setScreen("game");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");

@@ -13,7 +13,9 @@ export function GameScreen({ setScreen }: { setScreen: ScreenHandler }) {
   });
 
   const username = useUserStore((state) => state.username);
+  const userId = useUserStore((state) => state.userId);
   const setUsername = useUserStore((state) => state.setUsername);
+  const setUserId = useUserStore((state) => state.setUserId);
   if (!username) {
     console.error("Username not valid while GameScreen is active");
     setScreen("login");
@@ -31,6 +33,7 @@ export function GameScreen({ setScreen }: { setScreen: ScreenHandler }) {
           className="bg-zinc-600 px-4 py-1 rounded hover:bg-zinc-500"
           onClick={() => {
             setUsername(null);
+            setUserId(null);
             setScreen("login");
           }}
         >
@@ -38,7 +41,7 @@ export function GameScreen({ setScreen }: { setScreen: ScreenHandler }) {
         </button>
         {/* User label for development */}
         <p className="p-1 text-zinc-400">
-          User: {username ? username : "No user"}
+          User: {username ? username : "No user"} ({userId ? userId : "No id"})
         </p>
       </div>
       <GameMap position={position} nodes={nodes} />

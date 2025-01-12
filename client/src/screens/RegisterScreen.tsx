@@ -15,7 +15,7 @@ export function RegisterScreen({ setScreen }: { setScreen: ScreenHandler }) {
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setIsLoading(true);
