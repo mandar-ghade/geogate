@@ -66,7 +66,7 @@ async def login(login_req: LoginRequest, request: Request, response: Response):
             session_length = timedelta(days=30)
             expires_at = datetime.now(timezone.utc) + session_length
             await create_auth_session(conn, user_id, token_hash, expires_at)
-            
+
             # Set cookie
             response.set_cookie(
                 key="session_token",
@@ -74,7 +74,9 @@ async def login(login_req: LoginRequest, request: Request, response: Response):
                 httponly=True,
                 secure=False,  # Allow HTTP for DEVELOPMENT ONLY
                 samesite="lax",  # Preserved when navigating from external domain
-                max_age=session_length.seconds,
+                max_age=int(session_length.total_seconds()),
+                domain="localhost",  # Allow cookie sharing for dev
+                path="/",  # Cookies accessible from any path
             )
             
             return {
