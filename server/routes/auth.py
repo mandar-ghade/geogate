@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel
 from typing import Optional
-from db.queries import create_auth_session, get_user_password_hash, insert_user
+from db.auth import create_auth_session, get_user_password_hash, insert_user
 from models import User
 
 router = APIRouter()

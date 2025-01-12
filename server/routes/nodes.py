@@ -2,7 +2,7 @@ import random
 from asyncpg import Pool
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
-from db.queries import get_nodes_within_radius, insert_resource_node
+from db.nodes import get_nodes_within_radius, insert_resource_node
 from models import NODE_TYPE_WEIGHTS, Coords, NodeType, ResourceNode
 
 router = APIRouter()
