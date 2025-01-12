@@ -2,8 +2,8 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { Coords, ResourceNode } from "../types";
 import { getResourceIcon, userIcon } from "../icons";
 import { useEffect } from "react";
-import 'leaflet/dist/leaflet.css';
 import { useUserStore } from "../stores/userStore";
+import 'leaflet/dist/leaflet.css';
 
 async function copyCoordsToClipboard(coords: Coords) {
   const coordsMsg = `${coords.lat}, ${coords.lon}`;
@@ -35,14 +35,15 @@ export function GameMap(props: {
       />
       <MapUpdater center={position} />
       <Marker position={[position.lat, position.lon]} icon={userIcon}>
-        <Popup className="cursor-pointer">
+        <Popup className="cursor-default">
           User: {username ? username : "None found"}<br/>
           lat: {position.lat.toFixed(5)}{" "}
           lon: {position.lon.toFixed(5)}
           <br/>
-          <button onClick={async () => {
-            await copyCoordsToClipboard(position);
-          }}>
+          <button
+            className="border border-black rounded px-1 cursor-pointer hover:text-zinc-500 active:text-zinc-400"
+            onClick={async () => await copyCoordsToClipboard(position)}
+          >
             Copy to Clipboard
           </button>
         </Popup>
@@ -53,14 +54,15 @@ export function GameMap(props: {
           icon={getResourceIcon(node.nodeType)}
           key={idx}
         >
-          <Popup className="cursor-pointer">
-            {node.nodeType}<br/>
+          <Popup className="cursor-default">
+            Node: {node.nodeType}<br/>
             lat: {node.coords.lat.toFixed(5)}{" "}
             lon: {node.coords.lon.toFixed(5)}
             <br/>
-            <button onClick={async () => {
-              await copyCoordsToClipboard(node.coords);
-            }}>
+            <button
+              className="border border-black rounded px-1 cursor-pointer hover:text-zinc-500 active:text-zinc-400"
+              onClick={async () => await copyCoordsToClipboard(node.coords)}
+            >
               Copy to Clipboard
             </button>
           </Popup>
