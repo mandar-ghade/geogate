@@ -1,23 +1,23 @@
-export type Screen = "login" | "register" | "game"
+export type Screen = "login" | "register" | "game";
 export type ScreenHandler = (screen: Screen) => void;
 
 export type Coords = {
   lat: number, // constrained by -90 <= lat <= 90
   lon: number, // constrained by -180 <= lon <= 180
-}
+};
 
 export type ResourceNode = {
   id: number,
   nodeType: NodeType,
   coords: Coords,
-}
+};
 
 export enum NodeType {
   TREE = "tree",
   ROCK_BASIC = "rockBasic",
   ROCK_COPPER = "rockCopper",
   ROCK_IRON = "rockIron",
-}
+};
 
 export const NODE_TYPE_WEIGHTS: { [key in NodeType]: number } = {
   [NodeType.TREE]: 100,
