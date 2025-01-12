@@ -3,6 +3,7 @@ import { Coords, ResourceNode } from "../types";
 import { getResourceIcon, userIcon } from "../icons";
 import { useEffect } from "react";
 import 'leaflet/dist/leaflet.css';
+import { useUserStore } from "../stores/userStore";
 
 async function copyCoordsToClipboard(coords: Coords) {
   const coordsMsg = `${coords.lat}, ${coords.lon}`;
@@ -13,6 +14,7 @@ export function GameMap(props: {
   position: Coords, nodes: ResourceNode[]
 }) {
   const { position, nodes } = props;
+  const username = useUserStore((state) => state.username);
 
   return (
     <MapContainer
@@ -34,7 +36,7 @@ export function GameMap(props: {
       <MapUpdater center={position} />
       <Marker position={[position.lat, position.lon]} icon={userIcon}>
         <Popup className="cursor-pointer">
-          User<br/>
+          User: {username ? username : "None found"}<br/>
           lat: {position.lat.toFixed(5)}{" "}
           lon: {position.lon.toFixed(5)}
           <br/>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ScreenHandler } from "../types";
+import { useUserStore } from "../stores/userStore";
 
 export function LoginScreen({ setScreen }: { setScreen: ScreenHandler }) {
   const [formData, setFormData] = useState({
@@ -8,6 +9,9 @@ export function LoginScreen({ setScreen }: { setScreen: ScreenHandler }) {
   });
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const setUsername = useUserStore((state) => state.setUsername);
+  // const setUserId = useUserStore((state) => state.setUserId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +31,8 @@ export function LoginScreen({ setScreen }: { setScreen: ScreenHandler }) {
         const errorData = await response.json();
         throw new Error(errorData.detail || "Login failed");
       }
-
+      // Update user store and switch screens
+      setUsername(formData.username);
       setScreen("game");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
