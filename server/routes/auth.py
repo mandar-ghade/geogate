@@ -8,7 +8,12 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel
 from typing import Optional
-from db.auth import create_auth_session, get_user_password_hash, insert_user
+from db.auth import (
+    create_auth_session,
+    get_user_from_auth_session,
+    get_user_password_hash,
+    insert_user,
+)
 from models import User
 
 router = APIRouter()
@@ -85,5 +90,27 @@ async def login(login_req: LoginRequest, request: Request, response: Response):
             }
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception as err:
+        print("[ERROR]", err)
+        raise HTTPException(status_code=500, detail=str(err))
+
+
+@router.get("/verify-session")
+async def verify_session(request: Request) -> User:
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="No session token")
+    token_hash = base64.b64encode(
+        hashlib.sha256(session_token.encode()).digest()
+    ).decode()
+    try:
+        async with request.app.state.db_pool.acquire() as conn:
+            # Fetch and verify the session from the database
+            user = await get_user_from_auth_session(conn, token_hash)
+            if not user:
+                raise HTTPException(status_code=401,
+                                    detail="Invalid or expired session")
+            return user
+    except Exception as err:
+        print("[ERROR]", err)
+        raise HTTPException(status_code=401, detail=str(err))

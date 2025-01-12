@@ -55,3 +55,27 @@ async def create_auth_session(
     VALUES ($1, $2, $3)
     """
     await conn.execute(query, user_id, token_hash, expires_at)
+
+
+async def get_user_from_auth_session(
+    conn: Connection, token_hash: str
+) -> Optional[User]:
+    query = """
+    SELECT
+        u.id,
+        u.username,
+        u.email,
+        u.created_at
+    FROM auth_sessions s
+    JOIN users u ON u.id = s.user_id
+    WHERE s.session_token_hash = $1 AND s.expires_at > NOW()
+    """
+    row = await conn.fetchrow(query, token_hash)
+    if row is None:
+        return None
+    return User(
+        id=row["id"],
+        username=row["username"],
+        email=row["email"],
+        createdAt=row["created_at"],
+    )

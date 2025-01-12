@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ScreenHandler } from "../types";
+import { useEffect, useState } from "react";
+import { ScreenHandler, User } from "../types";
 import { useUserStore } from "../stores/userStore";
 
 export function LoginScreen({ setScreen }: { setScreen: ScreenHandler }) {
@@ -12,6 +12,30 @@ export function LoginScreen({ setScreen }: { setScreen: ScreenHandler }) {
 
   const setUsername = useUserStore((state) => state.setUsername);
   const setUserId = useUserStore((state) => state.setUserId);
+
+  // Check for existing session when component mounts
+  useEffect(() => {
+    async function checkExistingSession() {
+      try {
+        const response = await fetch("http://localhost:8000/auth/verify-session", {
+          credentials: "include",  // Includes session_token cookie
+        });
+
+        if (response.ok) {
+          const data: User = await response.json();  // Add type validation
+          setUsername(data.username);
+          setUserId(data.id);
+          setScreen("game");
+          console.log("Existing session found:", data);
+        }
+      } catch (error) {
+        // Session invalid or expired - user needs to log in manually
+        console.log("No valid session found");
+      }
+    }
+
+    checkExistingSession();
+  }, [setUsername, setUserId, setScreen]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
