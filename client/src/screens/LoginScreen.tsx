@@ -18,7 +18,7 @@ export function LoginScreen({ setScreen }: { setScreen: ScreenHandler }) {
     setError("");
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:8000/api/login", {
+      const response = await fetch("http://localhost:8000/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
