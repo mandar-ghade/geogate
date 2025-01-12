@@ -1,8 +1,9 @@
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
-import { Coords, ResourceNode } from "../types";
+import { Coords } from "../types";
 import { getResourceIcon, userIcon } from "../icons";
 import { useEffect } from "react";
 import { useUserStore } from "../stores/userStore";
+import { useNodeStore } from "../stores/nodeStore";
 import 'leaflet/dist/leaflet.css';
 
 async function copyCoordsToClipboard(coords: Coords) {
@@ -10,12 +11,10 @@ async function copyCoordsToClipboard(coords: Coords) {
   await navigator.clipboard.writeText(coordsMsg);
 }
 
-export function GameMap(props: {
-  nodes: ResourceNode[]
-}) {
-  const { nodes } = props;
+export function GameMap() {
   const username = useUserStore((state) => state.username);
   const position = useUserStore((store) => store.position);
+  const nodes = useNodeStore((store) => store.nodes);
 
   if (!position) {
     return <h2 className="text-xl font-bold m-2">Syncing Position...</h2>;

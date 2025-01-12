@@ -1,12 +1,12 @@
 import { insertResourceNode } from "../queries";
+import { useNodeStore } from "../stores/nodeStore";
 import { useUserStore } from "../stores/userStore";
 import { getRandomNodeType } from "../types";
 import { getRandomCoordinates } from "../util";
 
-export function GenRandomNodeButton({ refreshNodes }: {
-  refreshNodes: () => Promise<void>,
-}) {
+export function GenRandomNodeButton() {
   const position = useUserStore((store) => store.position);
+  const fetchNodes = useNodeStore((store) => store.fetchNodes);
 
   async function insertRandomNode() {
     if (position === null) return;
@@ -19,7 +19,7 @@ export function GenRandomNodeButton({ refreshNodes }: {
       console.error('No returned node id');
     } else {
       console.log(`Successfully inserted node (id: ${nodeId})`);
-      await refreshNodes();
+      await fetchNodes(position);
     }
   }
 
