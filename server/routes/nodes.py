@@ -19,7 +19,7 @@ def parse_node_type(type_str: str) -> NodeType:
     return NodeType(type_str)
 
 
-@router.get("/")
+@router.get("")
 async def get_nodes(lat: float, lon: float, request: Request) -> list[ResourceNode]:
     coords = Coords(lat=lat, lon=lon)
     radius = 1000  # 1km
@@ -35,7 +35,7 @@ class NodeCreate(BaseModel):
     coords: Coords
 
 
-@router.post("/")
+@router.post("")
 async def post_node(body: NodeCreate, request: Request):
     pool: Pool = request.app.state.db_pool
     async with pool.acquire() as conn:
