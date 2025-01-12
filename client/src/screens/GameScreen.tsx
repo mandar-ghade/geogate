@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { GameMap } from "../components/GameMap";
 import { GenRandomNodeButton } from "../components/GenRandomNodeButton";
 import { useLocation } from "../hooks/useLocation";
@@ -16,10 +17,15 @@ export function GameScreen({ setScreen }: { setScreen: ScreenHandler }) {
   const userId = useUserStore((state) => state.userId);
   const setUsername = useUserStore((state) => state.setUsername);
   const setUserId = useUserStore((state) => state.setUserId);
+  const setPosition = useUserStore((state) => state.setPosition);
   if (!username) {
     console.error("Username not valid while GameScreen is active");
     setScreen("login");
   }
+
+  useEffect(() => {
+    setPosition(position);
+  }, [position, setPosition]);
 
   if (!position) {
     return <h2 className="text-xl font-bold m-2">Locating Position...</h2>;
@@ -28,7 +34,7 @@ export function GameScreen({ setScreen }: { setScreen: ScreenHandler }) {
   return (
     <>
       <div className="flex flex-row gap-1 m-1">
-        <GenRandomNodeButton position={position} refreshNodes={refreshNodes} />
+        <GenRandomNodeButton refreshNodes={refreshNodes} />
         <button
           className="bg-zinc-600 px-4 py-1 rounded hover:bg-zinc-500"
           onClick={() => {
@@ -44,7 +50,7 @@ export function GameScreen({ setScreen }: { setScreen: ScreenHandler }) {
           User: {username ? username : "No user"} ({userId ? userId : "No id"})
         </p>
       </div>
-      <GameMap position={position} nodes={nodes} />
+      <GameMap nodes={nodes} />
     </>
   );
 }

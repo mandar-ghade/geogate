@@ -1,11 +1,13 @@
 import { insertResourceNode } from "../queries";
-import { Coords, getRandomNodeType } from "../types";
+import { useUserStore } from "../stores/userStore";
+import { getRandomNodeType } from "../types";
 import { getRandomCoordinates } from "../util";
 
-export function GenRandomNodeButton({ position, refreshNodes }: {
-  position: Coords,
+export function GenRandomNodeButton({ refreshNodes }: {
   refreshNodes: () => Promise<void>,
 }) {
+  const position = useUserStore((store) => store.position);
+
   async function insertRandomNode() {
     if (position === null) return;
     const radius = 200 // meters

@@ -11,10 +11,15 @@ async function copyCoordsToClipboard(coords: Coords) {
 }
 
 export function GameMap(props: {
-  position: Coords, nodes: ResourceNode[]
+  nodes: ResourceNode[]
 }) {
-  const { position, nodes } = props;
+  const { nodes } = props;
   const username = useUserStore((state) => state.username);
+  const position = useUserStore((store) => store.position);
+
+  if (!position) {
+    return <h2 className="text-xl font-bold m-2">Syncing Position...</h2>;
+  }
 
   return (
     <MapContainer
