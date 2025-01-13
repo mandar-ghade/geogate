@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from typing import Optional
 from db.auth import (
     create_auth_session,
+    delete_auth_session,
     get_user_from_auth_session,
     get_user_password_hash,
     insert_user,
@@ -51,22 +52,22 @@ async def login(login_req: LoginRequest, request: Request, response: Response):
             if not user_info:
                 raise HTTPException(status_code=401,
                                     detail="Invalid credentials")
-            
+
             user_id, password_hash = user_info
-            
+
             # Verify password
             try:
                 ph.verify(password_hash, login_req.password)
             except VerifyMismatchError:
                 raise HTTPException(status_code=401,
                                     detail="Invalid credentials")
-            
+
             # Generate session token
             session_token = secrets.token_urlsafe(32)
             token_hash = base64.b64encode(
                 hashlib.sha256(session_token.encode()).digest()
             ).decode()
-            
+
             # Store session
             session_length = timedelta(days=30)
             expires_at = datetime.now(timezone.utc) + session_length
@@ -93,6 +94,29 @@ async def login(login_req: LoginRequest, request: Request, response: Response):
     except Exception as err:
         print("[ERROR]", err)
         raise HTTPException(status_code=500, detail=str(err))
+
+@router.post("/logout")
+async def logout(request: Request, response: Response):
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="No session token")
+    token_hash = base64.b64encode(
+        hashlib.sha256(session_token.encode()).digest()
+    ).decode()
+    try:
+        async with request.app.state.db_pool.acquire() as conn:
+            await delete_auth_session(conn, token_hash)
+
+        # Clear the cookie
+        response.delete_cookie(
+            key="session_token",
+            domain="localhost",  # Ensure domain matches your cookie settings
+            path="/",
+        )
+        return {"message": "Logged out successfully"}
+    except Exception as err:
+        print("[ERROR]", err)
+        raise HTTPException(status_code=500, detail="Logout failed")
 
 
 @router.get("/verify-session")

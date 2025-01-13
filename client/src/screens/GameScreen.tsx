@@ -5,6 +5,7 @@ import { useLocation } from "../hooks/useLocation";
 import { useUserStore } from "../stores/userStore";
 import { ScreenHandler } from "../types";
 import { useNodeStore } from "../stores/nodeStore";
+import { LogoutButton } from "../components/LogoutButton";
 
 
 export function GameScreen({ setScreen }: { setScreen: ScreenHandler }) {
@@ -12,8 +13,6 @@ export function GameScreen({ setScreen }: { setScreen: ScreenHandler }) {
 
   const username = useUserStore((state) => state.username);
   const userId = useUserStore((state) => state.userId);
-  const setUsername = useUserStore((state) => state.setUsername);
-  const setUserId = useUserStore((state) => state.setUserId);
   const setPosition = useUserStore((state) => state.setPosition);
 
   const fetchNodes = useNodeStore((state) => state.fetchNodes);
@@ -42,16 +41,7 @@ export function GameScreen({ setScreen }: { setScreen: ScreenHandler }) {
     <>
       <div className="flex flex-row gap-1 m-1">
         <GenRandomNodeButton />
-        <button
-          className="bg-zinc-600 px-4 py-1 rounded hover:bg-zinc-500"
-          onClick={() => {
-            setUsername(null);
-            setUserId(null);
-            setScreen("login");
-          }}
-        >
-          Logout
-        </button>
+        <LogoutButton setScreen={setScreen} />
         {/* User label for development */}
         <p className="p-1 text-zinc-400">
           User: {username ? username : "No user"} ({userId ? userId : "No id"})

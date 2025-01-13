@@ -56,6 +56,11 @@ async def create_auth_session(
     """
     await conn.execute(query, user_id, token_hash, expires_at)
 
+async def delete_auth_session(conn: Connection, token_hash: str) -> None:
+    query = """
+    DELETE FROM auth_sessions WHERE session_token_hash = $1
+    """
+    await conn.execute(query, token_hash)
 
 async def get_user_from_auth_session(
     conn: Connection, token_hash: str

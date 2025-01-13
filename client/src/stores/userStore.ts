@@ -8,6 +8,7 @@ type UserStoreState = {
   setPosition: (position: Coords | null) => void,
   setUsername: (username: string | null) => void,
   setUserId: (userId: number | null) => void,
+  reset: () => void,
 };
 
 export const useUserStore = create<UserStoreState>((set) => ({
@@ -17,4 +18,5 @@ export const useUserStore = create<UserStoreState>((set) => ({
   setPosition: (position: Coords | null) => set({ position }),
   setUsername: (username: string | null) => set({ username }),
   setUserId: (userId: number | null) => set({ userId }),
+  reset: () => set({ position: null, username: null, userId: null }),
 }));
