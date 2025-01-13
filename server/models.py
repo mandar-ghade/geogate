@@ -29,20 +29,15 @@ class ResourceNode(BaseModel):
     node_type: NodeType = Field(..., alias="nodeType")
     coords: Coords
 
-
-class NodeCreate(BaseModel):
-    node_type: NodeType = Field(..., alias="nodeType")
-    coords: Coords
+    class Config:
+        populate_by_name = True
 
 
 class User(BaseModel):
     id: int
     username: str
     email: Optional[str]
-    created_at: datetime
+    created_at: datetime = Field(..., alias="createdAt")
 
-
-class UserCreate(BaseModel):
-    username: str
-    password: str
-    email: Optional[str] = None
+    class Config:
+        populate_by_name = True

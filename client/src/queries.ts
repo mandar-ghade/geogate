@@ -4,7 +4,7 @@ export async function fetchResourceNodes(
   coords: Coords
 ): Promise<ResourceNode[] | null> {
   const url =
-    `http://localhost:8000/api/nodes?lat=${coords.lat}&lon=${coords.lon}`;
+    `http://localhost:8000/nodes?lat=${coords.lat}&lon=${coords.lon}`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -21,7 +21,7 @@ export async function fetchResourceNodes(
 export async function insertResourceNode(
   coords: Coords, nodeType: NodeType
 ): Promise<number | null> {
-  const url = `http://localhost:8000/api/nodes`;
+  const url = `http://localhost:8000/nodes`;
   const body = JSON.stringify({ coords, nodeType });
   try {
     const response = await fetch(url, {
