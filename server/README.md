@@ -28,12 +28,22 @@ You then must start the `postgresql` service. For systemd users, run the command
 ```bash
 $ sudo systemctl start postgresql
 ```
+For macOS users:
+```bash
+$ brew services start postgresql
+```
+
 At this point, create a PostgreSQL user (preferably matching your Unix username) to be the owner of the database.
 
 Next, open `psql` as the `postgres` superuser.
 ```bash
 $ psql -U postgres
 ```
+or if you cannot change login as `postgres` superuser, login as your system user.
+```bash
+$ psql postgres
+```
+
 You can then add the `postgis` extension (might be unnecessary) and create a database for Geogate owned by your PostgreSQL user.
 ```sql
 CREATE EXTENSION postgis;
@@ -68,6 +78,12 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO <
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO <your-user>;
 ```
 **Note:** This must be done WITHIN the `geogate` database; otherwise, it will not grant the correct permissions.
+
+To change your user's password if not set by default. 
+```sql
+ALTER USER <your-user> WITH PASSWORD '<your-password>';
+```
+**Note:** A password is mandatory to run the server.
 
 ## Configuring Server
 ### PostgreSQL server config
