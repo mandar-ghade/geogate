@@ -106,7 +106,6 @@ export function LoginScreen({ setScreen }: { setScreen: ScreenHandler }) {
       >
         {isLoading ? "Loading..." : "Login"}
       </button>
-      
       <button
         type="button"
         onClick={() => setScreen("register")}

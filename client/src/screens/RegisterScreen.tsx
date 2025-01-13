@@ -75,13 +75,14 @@ export function RegisterScreen({ setScreen }: { setScreen: ScreenHandler }) {
         disabled={isLoading}
         className="bg-zinc-600 px-4 py-1 rounded hover:bg-zinc-500 disabled:opacity-50"
       >
-        {isLoading ? "Loading..." : "Submit"}
+        {isLoading ? "Loading..." : "Create"}
       </button>
       <button
-        className="bg-zinc-600 px-4 py-1 rounded hover:bg-zinc-500"
+        type="button"
         onClick={() => setScreen("login")}
+        className="text-sm text-zinc-400 hover:text-zinc-300"
       >
-        Go Back
+        Back to login
       </button>
     </form>
   );
